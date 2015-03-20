@@ -3,9 +3,11 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
-    vector<string> files = ofxListZip("archive.zip");
+
+    zip.open("archive.zip");
+    vector<string> files = zip.list();
     
-    ofBuffer buf = ofxZipGetFile("archive.zip", "archive/friends.jpg");
+    ofBuffer buf = zip.getFile("archive/friends.jpg");
 
     ofBufferToFile("friends.jpg", buf, true);
 

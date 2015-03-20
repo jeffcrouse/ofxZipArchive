@@ -30,3 +30,6 @@
 
 *.DS_Store
 xcuserdata
+example-extractSingleToFile/bin/data/friends.jpg
+example-create/bin/data/archive.zip
+example-extractAll/bin/data/archive

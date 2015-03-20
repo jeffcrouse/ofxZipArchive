@@ -3,7 +3,7 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
-    ofxZipFolder("piktures", "archive.zip");
+    ofxZipArchive::compress("piktures", "archive.zip");
     
     // TO DO: show "before" and "after" size
 }

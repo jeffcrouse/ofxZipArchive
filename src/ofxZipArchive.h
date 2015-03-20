@@ -27,15 +27,25 @@ typedef std::pair<const Poco::Zip::ZipLocalFileHeader, const Poco::Path> ok_info
 typedef const Poco::Zip::ZipLocalFileHeader done_info;
 
 
-bool ofxZipFolder(string folderPath, string zipPath, bool recursive=true, bool excludeRoot=true, Poco::Zip::ZipCommon::CompressionLevel cl=Poco::Zip::ZipCommon::CL_NORMAL);
-bool ofxUnzip(string zipPath, string destination);
-vector<string> ofxListZip(string zipPath);
-ofBuffer ofxZipGetFile(string zipPath, string file);
+// ----------------------------------------------------------
+class ofxZipArchive {
+public:
+    ofxZipArchive():bOpened(false){}
+    
+    bool open(string zipPath);
+    vector<string> list();
+    ofBuffer getFile(string fileName);
+    bool unzipTo(string destination);
+    
+    static bool compress(string folderPath, string zipPath, bool recursive=true, bool excludeRoot=true, Poco::Zip::ZipCommon::CompressionLevel cl=Poco::Zip::ZipCommon::CL_NORMAL);
+protected:
+    ifstream infile;
+    bool bOpened;
+};
 
 
-//--------------------------------------------
-class ofxZipArchiveHandler
-{
+// ----------------------------------------------------------
+class ofxZipArchiveHandler {
 public:
     ofxZipArchiveHandler() {
         isSuccessful = false;
@@ -54,7 +64,7 @@ public:
     }
     
     void onDone(const void*, done_info& header){
-        ofLogNotice() <<"ofxZipUtils: Zipped";
+        ofLogNotice("ofxZipArchiveHandler") << "Zipped " << header.getFileName() << " was " << header.getUncompressedSize() << " now " << header.getCompressedSize();
         isSuccessful = true;
     }
     

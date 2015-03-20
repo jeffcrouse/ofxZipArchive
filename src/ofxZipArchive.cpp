@@ -14,7 +14,7 @@ typedef Poco::Delegate<ofxZipArchiveHandler, done_info> done_handler;
 
 
 // ------------------------------------------------------
-bool ofxZipFolder(string folderPath, string zipPath, bool recursive, bool excludeRoot, Poco::Zip::ZipCommon::CompressionLevel cl) {
+bool ofxZipArchive::compress(string folderPath, string zipPath, bool recursive, bool excludeRoot, Poco::Zip::ZipCommon::CompressionLevel cl) {
     
     folderPath = ofToDataPath(folderPath);
     zipPath = ofToDataPath(zipPath);
@@ -39,59 +39,31 @@ bool ofxZipFolder(string folderPath, string zipPath, bool recursive, bool exclud
     return handler.isSuccessful;
 }
 
-// ------------------------------------------------------
-bool ofxUnzip(string zipPath, string destination) {
+
+// ----------------------------------------------------------
+bool ofxZipArchive::open(string zipPath) {
     zipPath = ofToDataPath(zipPath);
-    destination = ofToDataPath(destination);
+    ofLogNotice("ofxZipArchive") << "Opening " << zipPath;
     
-    ofLogNotice("ofxZipArchive") << "Unzipping " << zipPath ;
-    
-    ifstream infile(zipPath.c_str(), std::ios::binary);
-    infile.clear() ;
-    infile.seekg(0, ios::beg);
-    
+    infile.open(zipPath.c_str());
     if(!infile.good()) {
         ofLogError("ofZipArchive") << "Couldn't open " << zipPath;
         return false;
     }
-
-     ofLogNotice("ofxZipArchive") << "Unzipping archive to " << destination;
-    
-    Poco::Path d(destination);
-    Poco::Zip::Decompress de(infile, d);
-    
-    ofxZipArchiveHandler handler;
-    
-    de.EError += error_handler(&handler, &ofxZipArchiveHandler::onError);
-    de.EOk += ok_handler(&handler, &ofxZipArchiveHandler::onOk);
-    
-    de.decompressAllFiles();
-    
-    de.EError -= error_handler(&handler, &ofxZipArchiveHandler::onError);
-    de.EOk -= ok_handler(&handler, &ofxZipArchiveHandler::onOk);
-    
-    return handler.isSuccessful;
+    bOpened = true;
+    return true;
 }
 
-
-// ------------------------------------------------------
-vector<string> ofxListZip(string zipPath) {
+// ----------------------------------------------------------
+vector<string> ofxZipArchive::list() {
     vector<string> files;
-    zipPath = ofToDataPath(zipPath);
-    
-    ofLogNotice("ofxZipArchive") << "Listing " << zipPath ;
-    
-    ifstream infile(zipPath.c_str(), std::ios::binary);
-    infile.clear() ;
-    infile.seekg(0, ios::beg);
-    
-    if(!infile.good()) {
-        ofLogError("ofZipArchive") << "Couldn't open " << zipPath;
+    if(!bOpened) {
+        ofLogWarning("ofxZipArchive") << "Archive not opened";
         return files;
     }
+    
     infile.clear() ;
     infile.seekg(0, ios::beg);
-    
     Poco::Zip::ZipArchive arch(infile);
     Poco::Zip::ZipArchive::FileInfos::const_iterator it;
     for (it = arch.fileInfoBegin(); it != arch.fileInfoEnd(); it++) {
@@ -103,18 +75,11 @@ vector<string> ofxListZip(string zipPath) {
     return files;
 }
 
-// ------------------------------------------------------
-ofBuffer ofxZipGetFile(string zipPath, string fileName) {
-    zipPath = ofToDataPath(zipPath);
-    
-    ofLogNotice("ofxZipArchive") << "Opening " << zipPath ;
-    
-    ifstream infile(zipPath.c_str(), std::ios::binary);
-    infile.clear() ;
-    infile.seekg(0, ios::beg);
-    
-    if(!infile.good()) {
-        ofLogError("ofZipArchive") << "Couldn't open " << zipPath;
+
+// ----------------------------------------------------------
+ofBuffer ofxZipArchive::getFile(string fileName) {
+    if(!bOpened) {
+        ofLogWarning("ofxZipArchive") << "Archive not opened";
         return ofBuffer();
     }
     infile.clear() ;
@@ -134,8 +99,35 @@ ofBuffer ofxZipGetFile(string zipPath, string fileName) {
     
     ofBuffer buf(zipin);
     return buf;
+    
 }
 
-
-
-
+// ----------------------------------------------------------
+bool ofxZipArchive::unzipTo(string destination) {
+    destination = ofToDataPath(destination);
+    
+    if(!bOpened) {
+        ofLogWarning("ofxZipArchive") << "Archive not opened";
+        return false;
+    }
+    infile.clear() ;
+    infile.seekg(0, ios::beg);
+    
+    ofLogNotice("ofxZipArchive") << "Unzipping archive to " << destination;
+    
+    Poco::Path d(destination);
+    Poco::Zip::Decompress de(infile, d);
+    
+    ofxZipArchiveHandler handler;
+    
+    de.EError += error_handler(&handler, &ofxZipArchiveHandler::onError);
+    de.EOk += ok_handler(&handler, &ofxZipArchiveHandler::onOk);
+    
+    de.decompressAllFiles();
+    
+    de.EError -= error_handler(&handler, &ofxZipArchiveHandler::onError);
+    de.EOk -= ok_handler(&handler, &ofxZipArchiveHandler::onOk);
+    
+    return handler.isSuccessful;
+    
+}

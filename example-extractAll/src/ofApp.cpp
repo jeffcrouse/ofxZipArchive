@@ -3,8 +3,10 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
-    bool success = ofxUnzip("archive.zip", "");
     
+    zip.open("archive.zip");
+    bool success = zip.unzipTo("");
+  
     
     if(!success) {
         ofLogNotice() << "Couldn't open zipfile!";

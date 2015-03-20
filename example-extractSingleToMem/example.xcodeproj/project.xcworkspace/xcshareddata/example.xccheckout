@@ -14,7 +14,7 @@
 		<string>https://github.com/jefftimesten/ofxZipArchive.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>example-extractSingle/example.xcodeproj</string>
+	<string>example-extractSingleToMem/example.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>C403301BFAA4B0BE1FD84D07BE870258F5D54F44</key>

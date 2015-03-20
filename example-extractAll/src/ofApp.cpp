@@ -3,7 +3,6 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
-    
     zip.open("archive.zip");
     bool success = zip.unzipTo("");
   

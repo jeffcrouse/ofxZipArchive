@@ -22,11 +22,6 @@
 #include <Poco/StreamCopier.h>
 
 
-typedef std::pair<const Poco::Zip::ZipLocalFileHeader, const std::string> error_info;
-typedef std::pair<const Poco::Zip::ZipLocalFileHeader, const Poco::Path> ok_info;
-typedef const Poco::Zip::ZipLocalFileHeader done_info;
-
-
 // ----------------------------------------------------------
 class ofxZipArchive {
 public:
@@ -44,6 +39,14 @@ protected:
 };
 
 
+
+// ----------------------------------------------------------
+typedef std::pair<const Poco::Zip::ZipLocalFileHeader, const std::string> ZipErrorInfo;
+typedef std::pair<const Poco::Zip::ZipLocalFileHeader, const Poco::Path> ZipOkInfo;
+typedef const Poco::Zip::ZipLocalFileHeader ZipDoneInfo;
+
+
+
 // ----------------------------------------------------------
 class ofxZipArchiveHandler {
 public:
@@ -53,23 +56,22 @@ public:
     ~ofxZipArchiveHandler(){
     }
     
-    void onError(const void*, error_info& info){
-        ofLogError("ofxZipArchiveHandler") << "ofxZipUtils: Failed to Unzip: " + info.second;
+    void onError(const void*, ZipErrorInfo& info){
+        ofLogError("ofxZipArchive") << "ofxZipUtils: Failed to Unzip: " + info.second;
         isSuccessful = false;
     }
     
-    void onOk(const void*, ok_info& info){
-        ofLogNotice("ofxZipArchiveHandler") << "ofxZipUtils: Unzipped: " << info.second.toString();
+    void onOk(const void*, ZipOkInfo& info){
+        ofLogNotice("ofxZipArchive") << "ofxZipUtils: Unzipped: " << info.second.toString();
         isSuccessful = true;
     }
     
-    void onDone(const void*, done_info& header){
-        ofLogNotice("ofxZipArchiveHandler") << "Zipped " << header.getFileName() << " was " << header.getUncompressedSize() << " now " << header.getCompressedSize();
+    void onDone(const void*, ZipDoneInfo& header){
+        ofLogNotice("ofxZipArchive") << "Zipped " << header.getFileName() << " was " << header.getUncompressedSize() << " now " << header.getCompressedSize();
         isSuccessful = true;
     }
     
     bool isSuccessful;
-    ofLogLevel logLevel;
 };
 
 #else

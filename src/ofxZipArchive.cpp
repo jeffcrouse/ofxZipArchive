@@ -8,9 +8,9 @@
 
 #include "ofxZipArchive.h"
 
-typedef Poco::Delegate<ofxZipArchiveHandler, error_info> error_handler;
-typedef Poco::Delegate<ofxZipArchiveHandler, ok_info> ok_handler;
-typedef Poco::Delegate<ofxZipArchiveHandler, done_info> done_handler;
+typedef Poco::Delegate<ofxZipArchiveHandler, ZipErrorInfo> error_handler;
+typedef Poco::Delegate<ofxZipArchiveHandler, ZipOkInfo> ok_handler;
+typedef Poco::Delegate<ofxZipArchiveHandler, ZipDoneInfo> done_handler;
 
 
 // ------------------------------------------------------

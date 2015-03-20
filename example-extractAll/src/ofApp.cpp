@@ -5,7 +5,6 @@ void ofApp::setup(){
 
     zip.open("archive.zip");
     bool success = zip.unzipTo("");
-  
     
     if(!success) {
         ofLogNotice() << "Couldn't open zipfile!";

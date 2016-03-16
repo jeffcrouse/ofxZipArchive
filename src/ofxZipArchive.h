@@ -26,8 +26,8 @@
 class ofxZipArchive {
 public:
     ofxZipArchive():bOpened(false){}
-    
-    bool open(string zipPath);
+
+	bool open(string zipPath, bool binary = false);
     vector<string> list();
     ofBuffer getFile(string fileName);
     bool unzipTo(string destination);

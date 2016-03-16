@@ -41,11 +41,12 @@ bool ofxZipArchive::compress(string folderPath, string zipPath, bool recursive, 
 
 
 // ----------------------------------------------------------
-bool ofxZipArchive::open(string zipPath) {
+bool ofxZipArchive::open(string zipPath, bool binary) {
     zipPath = ofToDataPath(zipPath);
     ofLogNotice("ofxZipArchive") << "Opening " << zipPath;
     
-    infile.open(zipPath.c_str());
+	ios_base::openmode mode = binary ? ifstream::binary : ios_base::in;
+	infile.open(zipPath.c_str(), std::ios_base::binary);
     if(!infile.good()) {
         ofLogError("ofZipArchive") << "Couldn't open " << zipPath;
         return false;
